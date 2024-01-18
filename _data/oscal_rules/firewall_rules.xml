@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules:Rules xmlns:rules="http://example.org/rules"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://example.org/rules rules.xsd">
+
+    <Rule uuid="f23b55e8-03fa-443c-b09b-24e7ac1b9c54" name="FireWallRule">
+        <title>FireWallRule</title>
+        <tests>
+            <Test testID="fb4eb5de-0477-4459-836e-26a7e251e739" testName="urn:SSP:FireWall">
+                <measurement measurementID="d5667535-6403-462b-bcff-a28bae3dced3" measurementName="urn:SAR:FireWallField1"></measurement> 
+                <Criteria criteriaID="21c515b8-1db0-442c-a51d-5cc1430c9818" criteriaName="FireWallCriteria">
+                    <description>Fire Wall Criteria</description>
+                    <criteriaValues>
+                        <CriteriaValue>
+                            <valueName>allowedSchemes</valueName>
+                            <evalItem>
+                                <allowedStrings>
+                                    <AllowedItem>https</AllowedItem>
+                                    <AllowedItem>sftp</AllowedItem>
+                                </allowedStrings>
+                            </evalItem>
+                        </CriteriaValue>
+                        <CriteriaValue>
+                            <valueName>allowedDomains</valueName>
+                            <evalItem>
+                                <allowedStrings>
+                                    <AllowedItem>google.com</AllowedItem>
+                                    <AllowedItem>aws.com</AllowedItem>
+                                    <AllowedItem>microsoft.com</AllowedItem>
+                                    <AllowedItem>nsa.gov</AllowedItem>
+                                </allowedStrings>
+                            </evalItem>
+                        </CriteriaValue>             
+                    </criteriaValues>                    
+                </Criteria>
+            </Test>
+        </tests>
+        <logic_statement>
+            <LogicalComponent><test>urn:SSP:FireWall</test></LogicalComponent>
+        </logic_statement>
+    </Rule>
+
+</rules:Rules>

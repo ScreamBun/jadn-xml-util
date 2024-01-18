@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rules:Rules xmlns:rules="http://example.org/rules"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://example.org/rules rules_2024_01_16.xsd">
+    xsi:schemaLocation="http://example.org/rules rules.xsd">
 
-    <Rule uuid="64738ff5-5367-5958-9aee-98fffdcd1871" name="TirePressureRule" >
-
+    <Rule uuid="64738ff5-5367-5958-9aee-98fffdcd1871" name="TirePressureRule">
         <title>TirePressureRule</title>
         <tests>
             <Test testID="64738ff5-5367-5958-9aee-98fffdcd1872" testName="urn:SSP:TP">
                 <measurement measurementID="64738ff5-5367-5958-9aee-98fffdcd1873" measurementName="urn:SAR:TPField1"></measurement> 
-                <Criteria criteriaID="1704925026488" criteriaName="TirePressureCriteria">
+                <Criteria criteriaID="78253944-9902-4eff-a15d-b9e2147f6edf" criteriaName="TirePressureCriteria">
                     <criteriaValues>
                         <CriteriaValue>
                             <valueName>TirePressure</valueName>
                             <evalItem>
                                 <valueRange>
-                                    <min>30</min>
+                                    <min>31</min>
                                     <max>51</max>
                                 </valueRange>
                             </evalItem>
@@ -25,7 +24,7 @@
             </Test>
             <Test testID="64738ff5-5367-5958-9aee-98fffdcd1874" testName="urn:SSP:Temp">
                 <measurement measurementID="64738ff5-5367-5958-9aee-98fffdcd1873" measurementName="urn:SAR:TempField1"></measurement> 
-                <Criteria criteriaID="1704925026488" criteriaName="TireTempCriteria">
+                <Criteria criteriaID="37d67b00-d628-45ca-b19e-24c7ecabf5d2" criteriaName="TireTempCriteria">
                     <criteriaValues>
                         <CriteriaValue>
                             <valueName>TireTempCriteria</valueName>
@@ -39,14 +38,12 @@
                     </criteriaValues>   
                 </Criteria>   
             </Test>            
-        
         </tests>
         <logic_statement>
-            <LogicalComponent><test>"urn:SSP:TP"</test></LogicalComponent>
+            <LogicalComponent><test>urn:SSP:TP</test></LogicalComponent>
             <LogicalComponent><booleanLogicalOperator>AND</booleanLogicalOperator></LogicalComponent>
-            <LogicalComponent><test>"urn:SSP:Temp"</test></LogicalComponent>
+            <LogicalComponent><test>urn:SSP:Temp</test></LogicalComponent>
         </logic_statement>
     </Rule>
-
 
 </rules:Rules>

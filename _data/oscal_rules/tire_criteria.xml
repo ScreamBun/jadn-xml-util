@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CriteriaSet xmlns="http://example.org/rules"
+<criteria:CriteriaSet xmlns:criteria="http://example.org/rules"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://example.org/rules test_criteria_2024-01-10.xsd">
+    xsi:schemaLocation="http://example.org/rules test_criteria.xsd">
 
-    <!--Timestamp: 12 Jan 2024 10:30:45-->
-
-    <Criteria criteriaID="1704925016376" criteriaName="PassengerCarTireCriteria">
+    <Criteria criteriaID="bf90c9c6-370d-4c8d-b9ef-134a624decf5" criteriaName="PassengerCarTireCriteria">
         <description>Passenger Car Tire Criteria</description>
         <criteriaValues>
             <CriteriaValue>
@@ -28,8 +26,7 @@
             </CriteriaValue>             
         </criteriaValues>
     </Criteria>
-
-    <Criteria criteriaID="1704925021666" criteriaName="BicycleTireCriteria">
+    <Criteria criteriaID="deaa7a67-1fa0-46a8-8d47-45acea9ec219" criteriaName="BicycleTireCriteria">
         <description>Bicycle Tire Criteria</description>
         <criteriaValues>
             <CriteriaValue>
@@ -51,6 +48,6 @@
                 </evalItem>
             </CriteriaValue>            
         </criteriaValues>
-    </Criteria>       
+    </Criteria>    
 
-</CriteriaSet>
+</criteria:CriteriaSet>

@@ -1,9 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
    targetNamespace="http://example.org/oscal"
    xmlns:oscal="http://example.org/oscal">
-
-  	<!--Timestamp: 12 Jan 2024 10:30:15-->
-
   <xsd:simpleType name="StringDatatype">
     <xsd:annotation>
        <xsd:documentation>A non-empty string of Unicode characters with leading and trailing whitespace
