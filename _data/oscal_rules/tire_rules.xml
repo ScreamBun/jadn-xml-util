@@ -6,9 +6,9 @@
     <Rule uuid="64738ff5-5367-5958-9aee-98fffdcd1871" name="TirePressureRule">
         <title>TirePressureRule</title>
         <tests>
-            <Test testID="64738ff5-5367-5958-9aee-98fffdcd1872" testName="urn:SSP:TP">
-                <measurement measurementID="64738ff5-5367-5958-9aee-98fffdcd1873" measurementName="urn:SAR:TPField1"></measurement> 
-                <Criteria criteriaID="78253944-9902-4eff-a15d-b9e2147f6edf" criteriaName="TirePressureCriteria">
+            <Test testID="64738ff5-5367-5958-9aee-98fffdcd1872" testName="urn:niftydemo:test:SC13-pressure">
+                <measurement measurementID="64738ff5-5367-5958-9aee-98fffdcd1873" measurementName="urn:niftydemo:test:measurement:SC13-pressure"></measurement> 
+                <Criteria criteriaID="78253944-9902-4eff-a15d-b9e2147f6edf" criteriaName="urn:niftydemo:test:criteria:TP">
                     <criteriaValues>
                         <CriteriaValue>
                             <valueName>TirePressure</valueName>
@@ -22,9 +22,9 @@
                     </criteriaValues>   
                 </Criteria>   
             </Test>
-            <Test testID="64738ff5-5367-5958-9aee-98fffdcd1874" testName="urn:SSP:Temp">
-                <measurement measurementID="64738ff5-5367-5958-9aee-98fffdcd1873" measurementName="urn:SAR:TempField1"></measurement> 
-                <Criteria criteriaID="37d67b00-d628-45ca-b19e-24c7ecabf5d2" criteriaName="TireTempCriteria">
+            <Test testID="64738ff5-5367-5958-9aee-98fffdcd1874" testName="urn:niftydemo:test:SC13-temp">
+                <measurement measurementID="64738ff5-5367-5958-9aee-98fffdcd1873" measurementName="urn:niftydemo:test:measurement:SC13-temp"></measurement> 
+                <Criteria criteriaID="37d67b00-d628-45ca-b19e-24c7ecabf5d2" criteriaName="urn:niftydemo:test:criteria:Temp">
                     <criteriaValues>
                         <CriteriaValue>
                             <valueName>TireTempCriteria</valueName>
@@ -40,9 +40,9 @@
             </Test>            
         </tests>
         <logic_statement>
-            <LogicalComponent><test>urn:SSP:TP</test></LogicalComponent>
+            <LogicalComponent><test>urn:niftydemo:test:SC13-pressure</test></LogicalComponent>
             <LogicalComponent><booleanLogicalOperator>AND</booleanLogicalOperator></LogicalComponent>
-            <LogicalComponent><test>urn:SSP:Temp</test></LogicalComponent>
+            <LogicalComponent><test>urn:niftydemo:test:SC13-temp</test></LogicalComponent>
         </logic_statement>
     </Rule>
 
