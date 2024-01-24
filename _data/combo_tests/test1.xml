@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<Root xmlns:xi="http://www.w3.org/2003/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns="http://testurl.com/now">
+
+    <ns:element1 xmlns:ns="http://testurl.com/now" id="001">
+        <ns:element2 id="001.1" order="1">
+            <ns:element3 id="001.1.1"/>
+        </ns:element2>
+        <ns:element2 id="001.2" order="2">
+            <ns:element3 id="001.1.2"/>
+        </ns:element2>
+    </ns:element1><ns:element1 xmlns:ns="http://testurl.com/now" id="003">
+        <ns:element2 id="007.0" order="1">
+            <ns:element3 id="007.1.1"/>
+        </ns:element2>
+    </ns:element1><ns:element1 xmlns:ns="http://testurl.com/now" id="002">
+        <ns:element2 id="002.1" order="3">
+            <ns:element3 id="002.1.1"/>
+        </ns:element2>
+        <ns:element2 id="002.2" order="4">
+            <ns:element3 id="002.1.2"/>
+        </ns:element2>
+    </ns:element1>
+    <element1 id="999">
+        <element2 id="999.1" order="1">
+            <element3 id="999.1.1"/>
+        </element2>
+    </element1>
+
+</Root>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<Root xmlns:xi="http://www.w3.org/2003/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ns="http://testurl.com/now">
+
+    <xi:include href="Test1.xml" xpointer="xmlns(ns=http://testurl.com/now)xpointer(/ns:Root/ns:element1)" parse="xml" />
+    <xi:include href="Test2.xml" xpointer="xpointer(//Root/element1)" parse="xml" />
+
+</Root>
