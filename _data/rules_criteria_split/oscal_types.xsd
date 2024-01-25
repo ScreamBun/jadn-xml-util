@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+   targetNamespace="http://example.org/oscal"
+   xmlns:oscal="http://example.org/oscal">
+  <xsd:simpleType name="StringDatatype">
+    <xsd:annotation>
+       <xsd:documentation>A non-empty string of Unicode characters with leading and trailing whitespace
+      disallowed. Whitespace is: U+9, U+10, U+32 or [ \n\t]+</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+       <xsd:annotation>
+          <xsd:documentation>The 'string' datatype restricts the XSD type by prohibiting leading 
+        and trailing whitespace, and something (not only whitespace) is required.</xsd:documentation>
+       </xsd:annotation>
+       <xsd:whiteSpace value="preserve"/>
+       <xsd:pattern value="\S(.*\S)?">
+          <xsd:annotation>
+             <xsd:documentation>This pattern ensures that leading and trailing whitespace is
+          disallowed. This helps to even the user experience between implementations
+          related to whitespace.</xsd:documentation>
+          </xsd:annotation>
+       </xsd:pattern>
+    </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="TokenDatatype">
+    <xsd:annotation>
+       <xsd:documentation>A non-empty, non-colonized name as defined by XML Schema Part 2: Datatypes
+      Second Edition (https://www.w3.org/TR/xmlschema11-2/#NCName), with leading and trailing
+      whitespace disallowed.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="oscal:StringDatatype">
+       <xsd:pattern value="(\p{L}|_)(\p{L}|\p{N}|[.\-_])*">
+          <xsd:annotation>
+             <xsd:documentation>A single token may not contain whitespace.
+        </xsd:documentation>
+          </xsd:annotation>
+       </xsd:pattern>
+    </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="URIDatatype">
+    <xsd:annotation>
+       <xsd:documentation>A universal resource identifier (URI) formatted according to RFC3986.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="oscal:StringDatatype">
+       <xsd:pattern value="[a-zA-Z][a-zA-Z0-9+\-.]+:.*\S">
+          <xsd:annotation>
+             <xsd:documentation>Requires a scheme with colon per RFC 3986.</xsd:documentation>
+          </xsd:annotation>
+       </xsd:pattern>
+    </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="UUIDDatatype">
+    <xsd:annotation>
+       <xsd:documentation>A type 4 ('random' or 'pseudorandom') or type 5 UUID per RFC
+      4122.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="oscal:StringDatatype">
+       <xsd:pattern value="[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[45][0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}">
+          <xsd:annotation>
+             <xsd:documentation>A sequence of 8-4-4-4-12 hex digits, with extra
+          constraints in the 13th and 17-18th places for version 4 and 5
+        </xsd:documentation>
+          </xsd:annotation>
+       </xsd:pattern>
+    </xsd:restriction>
+ </xsd:simpleType>
+
+</xsd:schema>

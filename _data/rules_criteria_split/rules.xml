@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ns:Rules 
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ns="http://rulesurl.com/now"
+    xsi:schemaLocation="http://rulesurl.com/now rules.xsd">
+
+    <Rule uuid="64738ff5-5367-5958-9aee-98fffdcd1871" name="TirePressureRule">
+        <title>TirePressureRule</title> 
+        <tests>
+            <Test testID="64738ff5-5367-5958-9aee-98fffdcd1872" testName="urn:niftydemo:test:SC13-pressure">
+                <measurement measurementID="64738ff5-5367-5958-9aee-98fffdcd1873" measurementName="urn:niftydemo:test:measurement:SC13-pressure"></measurement> 
+                <xi:include href="criteria_tire_pressure.xml" xpointer="element(Criteria)" parse="xml"/>
+            </Test>
+        </tests>
+        <logic_statement>
+            <LogicalComponent><test>urn:niftydemo:test:SC13-pressure</test></LogicalComponent>
+            <LogicalComponent><booleanLogicalOperator>AND</booleanLogicalOperator></LogicalComponent>
+            <LogicalComponent><test>urn:niftydemo:test:SC13-temp</test></LogicalComponent>
+        </logic_statement>          
+    </Rule>  
+
+</ns:Rules>
