@@ -57,10 +57,10 @@
             </Test>           
         </tests>
         <logic_statement>
+            <LogicalComponent><booleanLogicalOperator>NOT</booleanLogicalOperator></LogicalComponent>
             <LogicalComponent><test>urn:niftydemo:test:SC35-firewallSchemesNotAllowed</test></LogicalComponent>
             <LogicalComponent><booleanLogicalOperator>NOT</booleanLogicalOperator></LogicalComponent>
             <LogicalComponent><test>urn:niftydemo:test:SC36-firewallDomainsNotAllowed</test></LogicalComponent>
-            <LogicalComponent><booleanLogicalOperator>NOT</booleanLogicalOperator></LogicalComponent>
         </logic_statement>          
     </Rule>    
 
