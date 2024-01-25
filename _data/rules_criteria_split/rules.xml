@@ -11,7 +11,7 @@
         <tests>
             <Test testID="64738ff5-5367-5958-9aee-98fffdcd1872" testName="urn:niftydemo:test:SC13-pressure">
                 <measurement measurementID="64738ff5-5367-5958-9aee-98fffdcd1873" measurementName="urn:niftydemo:test:measurement:SC13-pressure"></measurement> 
-                <xi:include href="criteria_tire_pressure.xml" xpointer="element(Criteria)" parse="xml"/>
+                <xi:include href="criteria_tire_pressure.xml" xpointer="element('bf90c9c6-370d-4c8d-b9ef-134a624decf5')" parse="xml"/>
             </Test>
         </tests>
         <logic_statement>
