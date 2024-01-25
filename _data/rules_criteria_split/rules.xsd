@@ -5,7 +5,6 @@
 	xmlns:xi="http://www.w3.org/2001/XInclude"
 	xmlns:oscal="http://example.org/oscal">
 
-	<!-- <xsd:include schemaLocation="test_criteria.xsd"/> -->
 	<xsd:import namespace="http://www.w3.org/2001/XInclude" schemaLocation="http://www.w3.org/2001/xinclude.xsd"/>
 	<xsd:import namespace="http://example.org/oscal" schemaLocation="oscal_types.xsd" />
 	

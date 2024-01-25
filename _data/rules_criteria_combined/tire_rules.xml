@@ -3,8 +3,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://example.org/rules rules.xsd">
 
-    <Rule uuid="64738ff5-5367-5958-9aee-98fffdcd1871" name="TirePressureRule">
-        <title>TirePressureRule</title>
+    <Rule uuid="64738ff5-5367-5958-9aee-98fffdcd1871" name="TireRule">
+        <title>TireRule</title>
         <tests>
             <Test testID="64738ff5-5367-5958-9aee-98fffdcd1872" testName="urn:niftydemo:test:SC13-pressure">
                 <measurement measurementID="64738ff5-5367-5958-9aee-98fffdcd1873" measurementName="urn:niftydemo:test:measurement:SC13-pressure"></measurement> 

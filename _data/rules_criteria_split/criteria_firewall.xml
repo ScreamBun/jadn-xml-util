@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<criteria:CriteriaSet 
+    xmlns:xi="http://www.w3.org/2001/XInclude" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:criteria="http://rulesurl.com/now"
+    xsi:schemaLocation="http://rulesurl.com/now test_criteria.xsd">
+
+    <Criteria criteriaID="055634e0-3b88-4d45-b091-948378cf3ae3" criteriaName="FirewallSchemesAllowedCriteria">
+        <description>Firewall Schemes Allowed Criteria</description>
+        <criteriaValues>
+            <CriteriaValue>
+                <valueName>allowedSchemes</valueName>
+                <evalItem>
+                    <allowedStrings>
+                        <AllowedItem>https</AllowedItem>
+                        <AllowedItem>sftp</AllowedItem>
+                    </allowedStrings>
+                </evalItem>
+            </CriteriaValue>           
+        </criteriaValues>
+    </Criteria>   
+
+    <Criteria criteriaID="68e72b79-d22c-4951-93a9-c912aef7ad62" criteriaName="FirewallSchemesNotAllowedCriteria">
+        <description>Firewall Schemes Not Allowed Criteria</description>
+        <criteriaValues>
+            <CriteriaValue>
+                <valueName>notAllowedSchemes</valueName>
+                <evalItem>
+                    <allowedStrings>
+                        <AllowedItem>http</AllowedItem>
+                        <AllowedItem>ftp</AllowedItem>
+                    </allowedStrings>
+                </evalItem>
+            </CriteriaValue>           
+        </criteriaValues>
+    </Criteria>     
+
+    <Criteria criteriaID="77fda064-4121-420d-a4a6-018a27802d40" criteriaName="FirewallDomainsAllowedCriteria">
+        <description>Firewall Domains Allowed Criteria</description>
+        <criteriaValues>
+            <CriteriaValue>
+                <valueName>allowedDomains</valueName>
+                <evalItem>
+                    <allowedStrings>
+                        <AllowedItem>google.com</AllowedItem>
+                        <AllowedItem>aws.com</AllowedItem>
+                        <AllowedItem>microsoft.com</AllowedItem>
+                        <AllowedItem>nsa.gov</AllowedItem>
+                    </allowedStrings>
+                </evalItem>
+            </CriteriaValue>             
+        </criteriaValues>
+    </Criteria>     
+
+    <Criteria criteriaID="3c080904-87c6-40cf-bde5-ec2b73c98958" criteriaName="FirewallDomainsNotAllowedCriteria">
+        <description>Firewall Domains Not Allowed Criteria</description>
+        <criteriaValues>
+            <CriteriaValue>
+                <valueName>notAllowedDomains</valueName>
+                <evalItem>
+                    <allowedStrings>
+                        <AllowedItem>aol.com</AllowedItem>
+                        <AllowedItem>yahoo.com</AllowedItem>
+                        <AllowedItem>texasholdem.com</AllowedItem>
+                        <AllowedItem>mgm.com</AllowedItem>
+                    </allowedStrings>
+                </evalItem>
+            </CriteriaValue>             
+        </criteriaValues>
+    </Criteria>     
+
+</criteria:CriteriaSet>

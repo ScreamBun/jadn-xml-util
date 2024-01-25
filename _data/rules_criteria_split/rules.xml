@@ -6,13 +6,17 @@
     xmlns:ns="http://rulesurl.com/now"
     xsi:schemaLocation="http://rulesurl.com/now rules.xsd">
 
-    <Rule uuid="64738ff5-5367-5958-9aee-98fffdcd1871" name="TirePressureRule">
-        <title>TirePressureRule</title> 
+    <Rule uuid="64738ff5-5367-5958-9aee-98fffdcd1871" name="TireRule">
+        <title>TireRule</title> 
         <tests>
             <Test testID="64738ff5-5367-5958-9aee-98fffdcd1872" testName="urn:niftydemo:test:SC13-pressure">
                 <measurement measurementID="64738ff5-5367-5958-9aee-98fffdcd1873" measurementName="urn:niftydemo:test:measurement:SC13-pressure"></measurement> 
-                <xi:include href="criteria_tire_pressure.xml" xpointer="element('bf90c9c6-370d-4c8d-b9ef-134a624decf5')" parse="xml"/>
+                <xi:include href="criteria_tire.xml" xpointer="element('bf90c9c6-370d-4c8d-b9ef-134a624decf5')" parse="xml"/>
             </Test>
+            <Test testID="64738ff5-5367-5958-9aee-98fffdcd1874" testName="urn:niftydemo:test:SC13-temp">
+                <measurement measurementID="64738ff5-5367-5958-9aee-98fffdcd1873" measurementName="urn:niftydemo:test:measurement:SC13-temp"></measurement> 
+                <xi:include href="criteria_tire.xml" xpointer="element('bf90c9c6-370d-4c8d-b9ef-134a624decf6')" parse="xml"/>
+            </Test>            
         </tests>
         <logic_statement>
             <LogicalComponent><test>urn:niftydemo:test:SC13-pressure</test></LogicalComponent>
@@ -20,5 +24,46 @@
             <LogicalComponent><test>urn:niftydemo:test:SC13-temp</test></LogicalComponent>
         </logic_statement>          
     </Rule>  
+
+    <Rule uuid="1b3827ac-1447-407e-a832-fa5bc6b9452c" name="FirewallAllowedRule">
+        <title>FirewallAllowedRule</title> 
+        <tests>
+            <Test testID="4455d7c0-bdcd-41fa-aebc-3c6e83bcc35a" testName="urn:niftydemo:test:SC33-firewallSchemesAllowed">
+                <measurement measurementID="42a3f257-6d0e-4996-9be3-24d2ff5bde9c" measurementName="urn:niftydemo:test:measurement:SC33-firewallSchemesAllowed"></measurement> 
+                <xi:include href="criteria_firewall.xml" xpointer="element('055634e0-3b88-4d45-b091-948378cf3ae3')" parse="xml"/>
+            </Test>
+            <Test testID="4455d7c0-bdcd-41fa-aebc-3c6e83bcc35a" testName="urn:niftydemo:test:SC34-firewallDomainsAllowed">
+                <measurement measurementID="42a3f257-6d0e-4996-9be3-24d2ff5bde4d" measurementName="urn:niftydemo:test:measurement:SC34-firewallDomainsAllowed"></measurement> 
+                <xi:include href="criteria_firewall.xml" xpointer="element('77fda064-4121-420d-a4a6-018a27802d40')" parse="xml"/>
+            </Test>           
+        </tests>
+        <logic_statement>
+            <LogicalComponent><test>urn:niftydemo:test:SC33-firewallSchemesAllowed</test></LogicalComponent>
+            <LogicalComponent><booleanLogicalOperator>AND</booleanLogicalOperator></LogicalComponent>
+            <LogicalComponent><test>urn:niftydemo:test:measurement:SC34-firewallDomainsAllowed</test></LogicalComponent>
+        </logic_statement>          
+    </Rule>
+
+    <Rule uuid="fe9afc85-7c3d-4dbe-833c-0f049d508ef9" name="FirewallAllowedRule">
+        <title>FirewallAllowedRule</title> 
+        <tests>
+            <Test testID="9e832b8d-3832-41d6-acd9-7a4ddf5113b0" testName="urn:niftydemo:test:SC35-firewallSchemesNotAllowed">
+                <measurement measurementID="524cf70f-886f-4e4c-b4ee-7bede3c6e2e4" measurementName="urn:niftydemo:test:measurement:SC35-firewallSchemesNotAllowed"></measurement> 
+                <xi:include href="criteria_firewall.xml" xpointer="element('68e72b79-d22c-4951-93a9-c912aef7ad62')" parse="xml"/>
+            </Test>
+            <Test testID="4a1a4541-7af5-49bd-ac19-1e0d08605868" testName="urn:niftydemo:test:SC36-firewallDomainsNotAllowed">
+                <measurement measurementID="352e25bb-e48f-4ece-9471-ee1cce1ba201" measurementName="urn:niftydemo:test:measurement:SC36-firewallDomainsNotAllowed"></measurement> 
+                <xi:include href="criteria_firewall.xml" xpointer="element('3c080904-87c6-40cf-bde5-ec2b73c98958')" parse="xml"/>
+            </Test>           
+        </tests>
+        <logic_statement>
+            <LogicalComponent><test>urn:niftydemo:test:SC35-firewallSchemesNotAllowed</test></LogicalComponent>
+            <LogicalComponent><booleanLogicalOperator>NOT</booleanLogicalOperator></LogicalComponent>
+            <LogicalComponent><test>urn:niftydemo:test:SC36-firewallDomainsNotAllowed</test></LogicalComponent>
+            <LogicalComponent><booleanLogicalOperator>NOT</booleanLogicalOperator></LogicalComponent>
+        </logic_statement>          
+    </Rule>    
+
+    <!--xpointer element ref: https://www.w3.org/TR/2003/REC-xptr-element-20030325/ -->
 
 </ns:Rules>

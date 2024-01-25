@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<criteria:CriteriaSet 
+    xmlns:xi="http://www.w3.org/2001/XInclude" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:criteria="http://rulesurl.com/now"
+    xsi:schemaLocation="http://rulesurl.com/now test_criteria.xsd">
+
+    <Criteria xmlns:ns="http://rulesurl.com/now" criteriaID="bf90c9c6-370d-4c8d-b9ef-134a624decf5" criteriaName="PassengerCarTirePressureCriteria">
+        <description>Passenger Car Tire Pressure Criteria</description>
+        <criteriaValues>
+            <CriteriaValue>
+                <valueName>TP</valueName>
+                <evalItem>
+                    <valueRange>
+                        <min>31</min>
+                        <max>50</max>
+                    </valueRange>
+                </evalItem>
+            </CriteriaValue>           
+        </criteriaValues>
+    </Criteria>
+
+    <Criteria xmlns:ns="http://rulesurl.com/now" criteriaID="bf90c9c6-370d-4c8d-b9ef-134a624decf6" criteriaName="PassengerCarTireTempCriteria">
+        <description>Passenger Car Tire Temp Criteria</description>
+        <criteriaValues>
+            <CriteriaValue>
+                <valueName>Temp</valueName>
+                <evalItem>
+                    <valueRange>
+                        <min>-15</min>
+                        <max>120</max>
+                    </valueRange>
+                </evalItem>
+            </CriteriaValue>             
+        </criteriaValues>
+    </Criteria>      
+
+</criteria:CriteriaSet>
