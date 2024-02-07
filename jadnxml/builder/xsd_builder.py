@@ -5,11 +5,12 @@ from jadnxml.helpers.jadn_helper import get_active_type_option_vals, get_opt_typ
 from jadnxml.helpers.xsd_helper import add_maxoccurs_to_element, add_minoccurs_to_element, build_choice, build_complex_type, build_documention, build_element, build_element_id, build_enumeration, build_fraction_digits, build_import, build_max_inclusive, build_max_length, build_min_inclusive, build_min_length, build_pattern, build_restriction, build_sequence, build_simple_type
 
 from jadnxml.constants.jadn_constants import ARRAY_CONST, ARRAYOF_CONST, BASE_TYPE, BINARY_CONST, BINARY_REG_CONST, DATE, DATE_TIME, DURATION, ENUM_CONST, F16, F16_DIGITS, F32, F32_DIGITS, FIELDS, FORMAT_CONST, FORMAT_OPTIONS_FROZ_DICT, INTEGER_CONST, IPV4_NET, IPV6_NET, KTYPE_CONST, MAP_CONST, MAPOF_CONST, MAXF_CONST, MAXV_CONST, MINF_CONST, MINV_CONST, NUMBER_CONST, PATTERN_CONST, POINTER_CONST, PRIMITIVE_TYPES, RECORD_CONST, SELECTOR_TYPES, SET_CONST, STRING_CONST, STRUCTURED_TYPES, TIME, TYPE_DESCRIPTION, TYPE_NAME, TYPE_OPTIONS, UNIQUE_CONST, UNSIGNED_BITS, VTYPE_CONST
-from jadnxml.constants.xsd_constants import xs_string, xs_decimal, xs_date, xs_time, xs_dateTime, max_occurs_unbounded, jadn_prefix, pattern_tag, enumerations, primitives, specializations, structures, schema_tag, jadn_namespace, jadn_base_type_file_loc
+from jadnxml.constants.xsd_constants import xs_string, xs_decimal, xs_date, xs_time, xs_dateTime, max_occurs_unbounded, pattern_tag, enumerations, primitives, specializations, structures, schema_tag, jadn_namespace, jadn_base_type_file_loc
 from jadnxml.utils.utils import find_items_by_val, get_file_name_only, read_type_data_from_file, safe_list_get, write_to_file
 
 
 jadn_types_dict: {} = {}
+jadn_prefix = "jadn:"
 
 def get_common_elements(type: []):
     common_elements = {} 
@@ -19,6 +20,79 @@ def get_common_elements(type: []):
     common_elements[TYPE_DESCRIPTION] = safe_list_get(type, 3, None)
     common_elements[FIELDS] = safe_list_get(type, 4, None)
     return common_elements
+
+    
+def build_base_types(root: ET.Element):
+    print(f"Building Primitive Simple Types")
+
+    # Primitives
+    for prim_key, prim_value in primitives.items():
+      xsd_comp_type = build_simple_type(root, prim_key)  
+      build_restriction(xsd_comp_type, prim_value, jadn_prefix=jadn_prefix)
+
+    # Enumeration
+    for enum_key, enum_value in enumerations.items():
+      xsd_simp_type = build_simple_type(root, enum_key)
+      xsd_restriction = build_restriction(xsd_simp_type, xs_string, jadn_prefix=jadn_prefix)
+      build_enumeration(xsd_restriction, enum_key + '-Value1', '1')      
+      build_enumeration(xsd_restriction, enum_key + '-Value2', '2')
+ 
+    # Choice
+    for choice_key, choice_value in specializations.items():
+      xsd_comp_type = build_complex_type(root, choice_key) 
+      xsd_choice = build_choice(xsd_comp_type)
+      build_element(xsd_choice, choice_key + '-Element', type=None, min_occurs=None, max_occurs=None, jadn_prefix=jadn_prefix)
+      
+    # float16
+    xsd_f16_type = build_simple_type(root, F16)
+    xsd_f16_restriction = build_restriction(xsd_f16_type, xs_decimal, jadn_prefix=jadn_prefix)
+    build_fraction_digits(xsd_f16_restriction, F16_DIGITS)
+    
+    # float32
+    xsd_f32_type = build_simple_type(root, F32)
+    xsd_f32_restriction = build_restriction(xsd_f32_type, xs_decimal, jadn_prefix=jadn_prefix)
+    build_fraction_digits(xsd_f32_restriction, F32_DIGITS)
+
+    # date
+    date_type = build_simple_type(root, DATE)
+    build_restriction(date_type, xs_date, jadn_prefix=jadn_prefix) 
+    
+    # time
+    time_type = build_simple_type(root, TIME)
+    build_restriction(time_type, xs_time, jadn_prefix=jadn_prefix)     
+    
+    # dateTime
+    date_time_type = build_simple_type(root, DATE_TIME)
+    build_restriction(date_time_type, xs_dateTime, jadn_prefix=jadn_prefix)         
+    
+    # string formats with regex
+    string_base_types_w_reg = find_items_by_val(FORMAT_OPTIONS_FROZ_DICT, STRING_CONST)
+    binary_base_types_w_reg = find_items_by_val(FORMAT_OPTIONS_FROZ_DICT, BINARY_CONST)
+    string_binary_base_types_w_reg = {**string_base_types_w_reg, **binary_base_types_w_reg}
+    for type_key, type_value in string_binary_base_types_w_reg.items():
+      if type_value[3]:
+        base_type = build_simple_type(root, type_key)
+        base_restriction = build_restriction(base_type, xs_string, jadn_prefix=jadn_prefix)
+        build_pattern(base_restriction, type_value[3])   
+                  
+    for struct in STRUCTURED_TYPES:
+      if struct is ARRAYOF_CONST or struct is MAPOF_CONST:
+        # ArrayOf and MapOf
+        xsd_simp_type = build_simple_type(root, struct)  
+        build_restriction(xsd_simp_type, STRING_CONST, jadn_prefix=jadn_prefix) 
+      elif struct is RECORD_CONST:
+        # Record  
+        xsd_comp_type = build_complex_type(root, struct) 
+        xsd_seq = build_sequence(xsd_comp_type)
+        build_element(xsd_seq, struct, STRING_CONST, jadn_prefix=jadn_prefix) 
+      else:
+        # Array and Map
+        xsd_comp_type_1 = build_complex_type(root, struct)   
+        xsd_seq_1 = build_sequence(xsd_comp_type_1)
+        xsd_element_1 = build_element(xsd_seq_1, struct + '-Elements', type=None, min_occurs=None, max_occurs=max_occurs_unbounded, jadn_prefix=jadn_prefix)      
+        xsd_comp_type_2 = build_complex_type(xsd_element_1)
+        xsd_seq_2 = build_sequence(xsd_comp_type_2)  
+        build_element(xsd_seq_2, struct + '-Element', type=STRING_CONST, jadn_prefix=jadn_prefix)    
       
 def build_fields(xsd_seq: ET.Element, jce: dict):
     for field in (jce.get(FIELDS) or []):
@@ -32,7 +106,7 @@ def build_fields(xsd_seq: ET.Element, jce: dict):
         field_type = get_vtype(field_opts)
         
       id = build_element_id(jce[TYPE_NAME], field_name)
-      field_type_et = build_element(xsd_seq, field_name, id=id, type=field_type)
+      field_type_et = build_element(xsd_seq, field_name, id=id, type=field_type, jadn_prefix=jadn_prefix)
       
       if field_opts:
         field_type_et = add_minoccurs_to_element(field_type_et, field_opts)
@@ -62,7 +136,8 @@ def build_binary_type_opts(parent_et: ET.Element, jadn_opts: {}, base_type: str)
 
     if format_val:
       frozen_format_opt = FORMAT_OPTIONS_FROZ_DICT.get(format_val)
-      restriction = build_restriction(parent_et, jadn_prefix + format_val)
+      global jadn_prefix
+      restriction = build_restriction(parent_et, jadn_prefix + format_val, jadn_prefix=jadn_prefix)
       build_documention(restriction, frozen_format_opt[4])
       
       if minv_val:     
@@ -74,7 +149,7 @@ def build_binary_type_opts(parent_et: ET.Element, jadn_opts: {}, base_type: str)
     else:
                   
       if minv_val or maxv_val:
-        restriction = build_restriction(parent_et, base_type)
+        restriction = build_restriction(parent_et, base_type, jadn_prefix=jadn_prefix)
                 
         if minv_val:     
           build_min_length(restriction, minv_val)       
@@ -92,10 +167,11 @@ def build_integer_type_opts(parent_et: ET.Element, jadn_opts: {}, base_type: str
         frozen_format_opt_name = frozen_format_opt[0]
         if format_val == frozen_format_opt_name:
           
+          global jadn_prefix
           if format_val == DURATION:
-            restriction = build_restriction(parent_et, jadn_prefix + format_val)
+            restriction = build_restriction(parent_et, jadn_prefix + format_val, jadn_prefix=jadn_prefix)
           else:
-            restriction = build_restriction(parent_et, jadn_prefix + base_type)
+            restriction = build_restriction(parent_et, jadn_prefix + base_type, jadn_prefix=jadn_prefix)
             
           build_documention(restriction, FORMAT_OPTIONS_FROZ_DICT.get(frozen_format_opt_name)[4])
           
@@ -115,7 +191,7 @@ def build_integer_type_opts(parent_et: ET.Element, jadn_opts: {}, base_type: str
       maxv_val = get_opt_type_val(MAXV_CONST, jadn_opts)
       
       if minv_val or maxv_val:
-        restriction = build_restriction(parent_et, base_type)
+        restriction = build_restriction(parent_et, base_type, jadn_prefix=jadn_prefix)
         
         if minv_val:
           build_min_inclusive(restriction, minv_val)
@@ -133,7 +209,8 @@ def build_number_type_opts(parent_et: ET.Element, jadn_opts: {}, base_type: str)
     
     if format_val:
       frozen_format_opt = FORMAT_OPTIONS_FROZ_DICT.get(format_val)
-      restriction = build_restriction(parent_et, jadn_prefix + format_val)
+      global jadn_prefix
+      restriction = build_restriction(parent_et, jadn_prefix + format_val, jadn_prefix=jadn_prefix)
       build_documention(restriction, frozen_format_opt[4])
       
       if minf_val:     
@@ -145,7 +222,7 @@ def build_number_type_opts(parent_et: ET.Element, jadn_opts: {}, base_type: str)
     else:
                   
       if minf_val or maxf_val:
-        restriction = build_restriction(parent_et, base_type)
+        restriction = build_restriction(parent_et, base_type, jadn_prefix=jadn_prefix)
                 
         if minf_val:     
           build_min_inclusive(restriction, minf_val) 
@@ -164,7 +241,8 @@ def build_string_type_opts(parent_et: ET.Element, jadn_opts: {}, base_type: str)
     
     if format_val:
       frozen_format_opt = FORMAT_OPTIONS_FROZ_DICT.get(format_val)
-      restriction = build_restriction(parent_et, jadn_prefix + format_val)           
+      global jadn_prefix
+      restriction = build_restriction(parent_et, jadn_prefix + format_val, jadn_prefix=jadn_prefix)           
       
       build_documention(restriction, frozen_format_opt[4])      
       
@@ -194,7 +272,7 @@ def build_string_type_opts(parent_et: ET.Element, jadn_opts: {}, base_type: str)
     else:
                   
       if minv_val or maxv_val:
-        restriction = build_restriction(parent_et, base_type)
+        restriction = build_restriction(parent_et, base_type, jadn_prefix=jadn_prefix)
                 
         if minv_val:     
           build_min_length(restriction, minv_val) 
@@ -205,7 +283,7 @@ def build_string_type_opts(parent_et: ET.Element, jadn_opts: {}, base_type: str)
       if pattern_val:
         
         if 'restriction' not in locals():          
-          restriction = build_restriction(parent_et, base_type)
+          restriction = build_restriction(parent_et, base_type, jadn_prefix=jadn_prefix)
         
         build_pattern(restriction, pattern_val)              
      
@@ -238,10 +316,10 @@ def build_primitive_type(root: ET.Element, type: []):
           build_string_type_opts(simple_type, active_jadn_opts, jce.get(BASE_TYPE))            
           
       else:
-        build_restriction(simple_type, jce.get(BASE_TYPE))
+        build_restriction(simple_type, jce.get(BASE_TYPE), jadn_prefix=jadn_prefix)
           
     else:
-      build_restriction(simple_type, jce.get(BASE_TYPE))
+      build_restriction(simple_type, jce.get(BASE_TYPE), jadn_prefix=jadn_prefix)
 
 
 def build_enumeration_type(root: ET.Element, type: []):
@@ -263,12 +341,12 @@ def build_enumeration_type(root: ET.Element, type: []):
         pointer_val = get_opt_type_val(POINTER_CONST, jadn_opts)
       
         if enum_val:
-          xsd_restriction = build_restriction(xsd_simple_type, enum_val)   
+          xsd_restriction = build_restriction(xsd_simple_type, enum_val, jadn_prefix=jadn_prefix)   
         elif pointer_val:
-          xsd_restriction = build_restriction(xsd_simple_type, pointer_val)   
+          xsd_restriction = build_restriction(xsd_simple_type, pointer_val, jadn_prefix=jadn_prefix)   
 
     if xsd_restriction == None:
-      xsd_restriction = build_restriction(xsd_simple_type, STRING_CONST)
+      xsd_restriction = build_restriction(xsd_simple_type, STRING_CONST, jadn_prefix=jadn_prefix)
 
     for field in jce[FIELDS]:
       field_index = field[0]
@@ -310,7 +388,7 @@ def build_map_type(root: ET.Element, jce: dict):
 
     xsd_seq = build_sequence(xsd_complex_type_1)
     
-    map_el = build_element(xsd_seq, jce[TYPE_NAME], min_occurs=minv_opt, max_occurs=maxv_opt)
+    map_el = build_element(xsd_seq, jce[TYPE_NAME], min_occurs=minv_opt, max_occurs=maxv_opt, jadn_prefix=jadn_prefix)
     map_complex_type = build_complex_type(map_el)
     map_seq = build_sequence(map_complex_type)
     build_fields(map_seq, jce)     
@@ -338,21 +416,21 @@ def build_array_type(root: ET.Element, jce: dict):
     if format_opt == IPV4_NET:
       id_1 = build_element_id(jce[TYPE_NAME], format_opt)
       id_1 = build_element_id(id_1, BINARY_CONST)
-      build_element(parent_et_tag=xsd_seq_1, name=id_1, id=id_1, type=BINARY_CONST, min_occurs=None, max_occurs=None, is_unique=None, is_set=None)
+      build_element(parent_et_tag=xsd_seq_1, name=id_1, id=id_1, type=BINARY_CONST, min_occurs=None, max_occurs=None, is_unique=None, is_set=None, jadn_prefix=jadn_prefix)
       id_2 = build_element_id(jce[TYPE_NAME], format_opt)
       id_2 = build_element_id(id_2, INTEGER_CONST)
-      build_element(parent_et_tag=xsd_seq_1, name=id_2, id=id_2, type=INTEGER_CONST, min_occurs=None, max_occurs=None, is_unique=None, is_set=None)
+      build_element(parent_et_tag=xsd_seq_1, name=id_2, id=id_2, type=INTEGER_CONST, min_occurs=None, max_occurs=None, is_unique=None, is_set=None, jadn_prefix=jadn_prefix)
       
     elif format_opt == IPV6_NET:
       id_1 = build_element_id(jce[TYPE_NAME], format_opt)
       id_1 = build_element_id(id_1, BINARY_CONST)
-      build_element(parent_et_tag=xsd_seq_1, name=id_1, id=id_1, type=BINARY_CONST, min_occurs=None, max_occurs=None, is_unique=None, is_set=None)
+      build_element(parent_et_tag=xsd_seq_1, name=id_1, id=id_1, type=BINARY_CONST, min_occurs=None, max_occurs=None, is_unique=None, is_set=None, jadn_prefix=jadn_prefix)
       id_2 = build_element_id(jce[TYPE_NAME], format_opt)
       id_2 = build_element_id(id_2, INTEGER_CONST)
-      build_element(parent_et_tag=xsd_seq_1, name=id_2, id=id_2, type=INTEGER_CONST, min_occurs=None, max_occurs=None, is_unique=None, is_set=None)
+      build_element(parent_et_tag=xsd_seq_1, name=id_2, id=id_2, type=INTEGER_CONST, min_occurs=None, max_occurs=None, is_unique=None, is_set=None, jadn_prefix=jadn_prefix)
       
     else:
-      array_el = build_element(xsd_seq_1, jce[TYPE_NAME], min_occurs=minv_opt, max_occurs=maxv_opt)
+      array_el = build_element(xsd_seq_1, jce[TYPE_NAME], min_occurs=minv_opt, max_occurs=maxv_opt, jadn_prefix=jadn_prefix)
       array_complex_type = build_complex_type(array_el)
       array_seq = build_sequence(array_complex_type)
       build_fields(array_seq, jce)
@@ -388,17 +466,18 @@ def build_mapOf_type(root: ET.Element, jce: dict):
                   min_occurs=minv_opt,
                   max_occurs=maxv_opt,
                   is_unique=False, 
-                  is_set=False)
+                  is_set=False, 
+                  jadn_prefix=jadn_prefix)
     
     xsd_complex_type_2 = build_complex_type(xsd_element_1)
     xsd_seq_2 = build_sequence(xsd_complex_type_2)
     
     
     id_2 = build_element_id(map_name, ktype_opt)
-    build_element(xsd_seq_2, ktype_opt, id_2)
+    build_element(xsd_seq_2, ktype_opt, id_2, jadn_prefix=jadn_prefix)
 
     id_3 = build_element_id(map_name, vtype_opt)
-    build_element(xsd_seq_2, vtype_opt, id_3)          
+    build_element(xsd_seq_2, vtype_opt, id_3, jadn_prefix=jadn_prefix)          
 
 
 def build_arrayOf(root: ET.Element, jce: dict):
@@ -424,7 +503,7 @@ def build_arrayOf(root: ET.Element, jce: dict):
     set_opt = get_type_option_val(jce[TYPE_OPTIONS], jce.get(BASE_TYPE), SET_CONST)   
     
     id = build_element_id(jce[TYPE_NAME], jce[TYPE_NAME])
-    build_element(xsd_seq_1, vtype_opt, id, is_unique=unique_opt, is_set=set_opt, min_occurs=minv_opt, max_occurs=maxv_opt) 
+    build_element(xsd_seq_1, vtype_opt, id, is_unique=unique_opt, is_set=set_opt, min_occurs=minv_opt, max_occurs=maxv_opt, jadn_prefix=jadn_prefix) 
     
     
 def build_record_type(root: ET.Element, jce: dict):
@@ -483,16 +562,29 @@ def build_types(root : ET.Element):
         build_structure_type(root, jadn_type) 
         
         
-def convert_xsd_from_dict(jadn_dict: dict): 
+def convert_xsd_from_dict(jadn_dict: dict, *args, **kwargs): 
   xml_str = None
+  
+  import_base_types = kwargs.get('import_base_types', None)
+  if import_base_types == None:
+      import_base_types = False   
   
   try:
   
     # TODO: jadn validation?
 
     schema_et = ET.Element(schema_tag)
-    schema_et.set('xmlns:jadn', jadn_namespace)    
-    build_import(schema_et, jadn_base_type_file_loc, jadn_namespace)
+    
+    if import_base_types:
+      schema_et.set('xmlns:jadn', jadn_namespace)  
+      # Inports base types as a separate schema
+      build_import(schema_et, jadn_base_type_file_loc, jadn_namespace)
+    else:
+      # build_import(schema_et, None, None)
+      # Builds base types directly into the schema
+      global jadn_prefix
+      jadn_prefix = ""
+      build_base_types(schema_et) 
     
     jadn_info = None
     jadn_exports = None
@@ -505,12 +597,12 @@ def convert_xsd_from_dict(jadn_dict: dict):
         
     global jadn_types_dict        
     jadn_types_dict = jadn_dict['types']
-    
+      
     build_types(schema_et)    
     
     if jadn_exports:
       for export in jadn_exports:
-        build_element(schema_et, export, export, export)  
+        build_element(schema_et, export, export, export, jadn_prefix=jadn_prefix)  
         
     ET.indent(schema_et, space="\t", level=0)        
     xml_str = ET.tostring(schema_et, encoding='unicode')            

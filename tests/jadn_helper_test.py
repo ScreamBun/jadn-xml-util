@@ -1,12 +1,145 @@
 
 
+from io import StringIO
+from lxml import etree
+
 import xml.etree.ElementTree as ET
 
 from jadnxml.builder.xsd_builder import build_integer_type_opts, build_number_type_opts, build_string_type_opts, convert_to_xsd_from_file, convert_xsd_from_dict
 from jadnxml.constants.jadn_constants import ARRAY_CONST, ARRAYOF_CONST, BINARY_CONST, BOOLEAN_CONST, CHOICE_CONST, ENUMERATED_CONST, INTEGER_CONST, MAP_CONST, MAPOF_CONST, NUMBER_CONST, RECORD_CONST, STRING_CONST
 from jadnxml.constants.xsd_constants import schema_tag
 from jadnxml.helpers.jadn_helper import get_active_type_option_vals, get_field_option_val, get_type_option_vals
-from jadnxml.utils.utils import read_type_data_from_file
+from jadnxml.utils.utils import get_xsd_file, read_type_data_from_file, write_to_file
+from jadnxml.validation.validation_manager import validate_xml_data
+
+music_xml_str = '''<?xml version="1.0" encoding="utf8"?>
+                <Album>
+                    <title>Back in Black</title>
+                </Album>'''
+                
+music_xml_str2 = '''<?xml version="1.0"?>
+                <Album>
+                    <titleX>Back in Black</titleX>
+                </Album>'''                
+            
+test_valid_xml_str = '<a><b></b></a>'
+test_invalid_xml_str = '<a><c></c></a>'
+
+test_xsd_str =  '''<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                <xsd:element name="a" type="AType"/>
+                <xsd:complexType name="AType">
+                <xsd:sequence>
+                    <xsd:element name="b" type="xsd:string" />
+                </xsd:sequence>
+                </xsd:complexType>
+                </xsd:schema>'''
+
+jadn_sample_music_dict = {
+  "info": {
+    "title": "Music Library",
+    "package": "http://fake-audio.org/music-lib",
+    "version": "1.0",
+    "description": "This information model defines a library of audio tracks, organized by album",
+    "license": "CC0-1.0",
+    "exports": ["Album"]
+  },
+  "types": [
+    ["Album", "Record", [], "model for the album", [
+        [1, "title", "String", ["[1"], "commonly known title for this album"]
+      ]]
+  ]
+}
+
+jadn_full_music_dict = {
+                "info": {
+                    "title": "Music Library",
+                    "package": "http://fake-audio.org/music-lib",
+                    "version": "1.0",
+                    "description": "This information model defines a library of audio tracks, organized by album",
+                    "license": "CC0-1.0",
+                    "exports": ["Library", "Album", "Track"]
+                },
+                "types": [
+                    ["Library", "MapOf", ["+Barcode", "*Album", "{1"], "", []],
+                    ["Barcode", "String", ["%\\d{12}"], "A UPC-A barcode is 12 digits", []],
+                    ["Album", "Record", [], "model for the album", [
+                        [1, "artist", "Artist", [], "artist associated with this album"],
+                        [2, "title", "String", [], "commonly known title for this album"],
+                        [3, "pub_data", "Publication-Data", [], "metadata about album publication"],
+                        [4, "tracks", "ArrayOf", ["*Track", "]0"], "individual track descriptions"],
+                        [5, "cover_art", "Cover-Art", [], "cover art image for this album"]
+                    ]],
+                    ["Artist", "Record", [], "interesting information about the performers", [
+                        [1, "artist_name", "String", [], "who is this person"],
+                        [2, "instruments", "ArrayOf", ["*Instrument", "]0"], "and what do they play"]
+                    ]],
+                    ["Instrument", "Enumerated", [], "collection of instruments (non-exhaustive)", [
+                        [1, "vocals", ""],
+                        [2, "guitar", ""],
+                        [3, "bass", ""],
+                        [4, "drums", ""],
+                        [5, "keyboards", ""],
+                        [6, "percussion", ""],
+                        [7, "brass", ""],
+                        [8, "woodwinds", ""],
+                        [9, "harmonica", ""]
+                    ]],
+                    ["Publication-Data", "Record", [], "who and when of publication", [
+                        [1, "label", "String", [], "name of record label"],
+                        [2, "rel_date", "String", ["/date"], "and when did they let this drop"]
+                    ]],
+                    ["Track", "Record", [], "information about the individual audio tracks", [
+                        [1, "t_number", "Number", [], "track sequence number"],
+                        [2, "title", "String", [], "track title"],
+                        [3, "length", "String", ["/time"], "length of track"],
+                        [4, "featured", "ArrayOf", ["*Artist"], "important guest performers"],
+                        [5, "audio", "Audio", [], "the all important content"]
+                    ]],
+                    ["Audio", "Record", [], "information about what gets played", [
+                        [1, "a_format", "Audio-Format", [], "what type of audio file?"],
+                        [2, "a_content", "Binary", [], "the audio data in the identified format"]
+                    ]],
+                    ["Audio-Format", "Enumerated", [], "can only be one, but can extend list", [
+                        [1, "MP3", ""],
+                        [2, "OGG", ""],
+                        [3, "FLAC", ""]
+                    ]],
+                    ["Cover-Art", "Record", [], "pretty picture for the album", [
+                        [1, "i_format", "Image-Format", [], "what type of image file?"],
+                        [2, "i_content", "Binary", [], "the image data in the identified format"]
+                    ]],
+                    ["Image-Format", "Enumerated", [], "can only be one, but can extend list", [
+                        [1, "PNG", ""],
+                        [2, "JPG", ""]
+                    ]]
+                ]
+            }
+
+
+
+def test_validate_valid_xml_data():
+    response = validate_xml_data(test_xsd_str, test_valid_xml_str)
+    
+    assert response[0] == True 
+    assert response[1] == None
+    
+    
+def test_validate_valid_xml_data():
+    response = validate_xml_data(test_xsd_str, test_invalid_xml_str)
+    
+    assert response[0] == False
+    assert response[1] != None
+    
+    
+def test_validate_valid_data():
+    xsd_tuple = convert_xsd_from_dict(jadn_sample_music_dict)
+    xsd_as_string = xsd_tuple[0]
+    xsd_as_et = xsd_tuple[1]
+
+    response = validate_xml_data(xsd_as_string, music_xml_str2)
+    
+    assert response[0] == True 
+    assert response[1] == None
 
 
 def test_type_data_from_file():
@@ -22,71 +155,8 @@ def test_convert_xsd_from_file():
     
     
 def test_convert_xsd_from_dict():
-    data_dict = {
-                    "info": {
-                        "title": "Music Library",
-                        "package": "http://fake-audio.org/music-lib",
-                        "version": "1.0",
-                        "description": "This information model defines a library of audio tracks, organized by album",
-                        "license": "CC0-1.0",
-                        "exports": ["Library", "Album", "Track"]
-                    },
-                    "types": [
-                        ["Library", "MapOf", ["+Barcode", "*Album", "{1"], "", []],
-                        ["Barcode", "String", ["%\\d{12}"], "A UPC-A barcode is 12 digits", []],
-                        ["Album", "Record", [], "model for the album", [
-                            [1, "artist", "Artist", [], "artist associated with this album"],
-                            [2, "title", "String", [], "commonly known title for this album"],
-                            [3, "pub_data", "Publication-Data", [], "metadata about album publication"],
-                            [4, "tracks", "ArrayOf", ["*Track", "]0"], "individual track descriptions"],
-                            [5, "cover_art", "Cover-Art", [], "cover art image for this album"]
-                        ]],
-                        ["Artist", "Record", [], "interesting information about the performers", [
-                            [1, "artist_name", "String", [], "who is this person"],
-                            [2, "instruments", "ArrayOf", ["*Instrument", "]0"], "and what do they play"]
-                        ]],
-                        ["Instrument", "Enumerated", [], "collection of instruments (non-exhaustive)", [
-                            [1, "vocals", ""],
-                            [2, "guitar", ""],
-                            [3, "bass", ""],
-                            [4, "drums", ""],
-                            [5, "keyboards", ""],
-                            [6, "percussion", ""],
-                            [7, "brass", ""],
-                            [8, "woodwinds", ""],
-                            [9, "harmonica", ""]
-                        ]],
-                        ["Publication-Data", "Record", [], "who and when of publication", [
-                            [1, "label", "String", [], "name of record label"],
-                            [2, "rel_date", "String", ["/date"], "and when did they let this drop"]
-                        ]],
-                        ["Track", "Record", [], "information about the individual audio tracks", [
-                            [1, "t_number", "Number", [], "track sequence number"],
-                            [2, "title", "String", [], "track title"],
-                            [3, "length", "String", ["/time"], "length of track"],
-                            [4, "featured", "ArrayOf", ["*Artist"], "important guest performers"],
-                            [5, "audio", "Audio", [], "the all important content"]
-                        ]],
-                        ["Audio", "Record", [], "information about what gets played", [
-                            [1, "a_format", "Audio-Format", [], "what type of audio file?"],
-                            [2, "a_content", "Binary", [], "the audio data in the identified format"]
-                        ]],
-                        ["Audio-Format", "Enumerated", [], "can only be one, but can extend list", [
-                            [1, "MP3", ""],
-                            [2, "OGG", ""],
-                            [3, "FLAC", ""]
-                        ]],
-                        ["Cover-Art", "Record", [], "pretty picture for the album", [
-                            [1, "i_format", "Image-Format", [], "what type of image file?"],
-                            [2, "i_content", "Binary", [], "the image data in the identified format"]
-                        ]],
-                        ["Image-Format", "Enumerated", [], "can only be one, but can extend list", [
-                            [1, "PNG", ""],
-                            [2, "JPG", ""]
-                        ]]
-                    ]
-                    }
-    data_converted = convert_xsd_from_dict(data_dict)
+
+    data_converted = convert_xsd_from_dict(jadn_full_music_dict)
     
     assert data_converted != None
 

@@ -4,7 +4,7 @@ import sys
 
 from jadnxml.builder.xsd_builder import convert_to_xsd_from_file
 from jadnxml.utils.utils import get_after_last_occurance, get_filename_from_path
-from jadnxml.validation.validation_manager import validate_xml
+from jadnxml.validation.validation_manager import validate_xml_files
 
 
 if __name__=="__main__":
@@ -59,11 +59,11 @@ if __name__=="__main__":
             if(xml_file_extension != "xml"):
                 raise "invalid file extension, must be .xml"        
 
-            validate_xml(xsd, xml)
+            validate_xml_files(xsd, xml)
             
             print("Validation Complete")
         else:
-            validate_xml('note.xsd', 'note.xml')
+            validate_xml_files('note.xsd', 'note.xml')
             
             print("Validation Complete")
     else:

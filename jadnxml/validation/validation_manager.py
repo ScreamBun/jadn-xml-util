@@ -1,10 +1,43 @@
+from io import StringIO
+import io
+import json
 import sys
 import traceback
+import xml.etree.ElementTree as ET
+
+from lxml import etree
+import xml.etree.ElementTree as ET
 from jadnxml.utils.utils import get_xml_file, get_xsd_file
 
-# Ref: https://github.com/usnistgov/OSCAL/blob/main/src/utils/oscal-content-validator.py
 
-def validate_xml(xsd_file_name, xml_file_name):
+def validate_xml_data(xsd_str: str, xml_str: str):
+    print(f"Validating xsd data against xml schema")
+    
+    try:
+        # XSD
+        xsd_stringio = StringIO(xsd_str)
+        xmlschema_tree = etree.parse(xsd_stringio)
+        xmlschema = etree.XMLSchema(xmlschema_tree)
+        
+        # XML
+        xml_str = xml_str.replace("\n", "")
+        xml_str = xml_str.strip()
+        xml_stringio = StringIO(xml_str)
+        xml_tree = etree.parse(xml_stringio)
+        
+        # Validate XML against XSD
+        # Left off here, everything was passing....=^/ 
+        xmlschema.validate(xml_tree)     
+      
+    except Exception as e:
+        err_msg = e.args[0]
+        print("XML Validation Error: " + err_msg)
+        return (False, err_msg)
+
+    return (True, None)
+
+
+def validate_xml_files(xsd_file_name, xml_file_name):
     print(f"Validating '{xml_file_name}' data against '{xsd_file_name}' schema")
     is_valid = False
     
